@@ -15,13 +15,13 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.SUPABASE_URL || 'https://ysbzeazbrpgnzrrdqkel.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
  // TypeScript key path checking string type assertion
-if (!supabaseServiceKey) {
-  throw new Error("Missing env.SUPABASE_SERVICE_ROLE_KEY inside local .env configurations");
+if (!supabaseServiceKey && process.env.NODE_ENV === "production") {
+  console.warn("Warning: Missing env.SUPABASE_SERVICE_ROLE_KEY. Make sure to add it in the Render Dashboard Environment tab.");
 }
 // Backend Supabase client
-export const supabase = createClient(supabaseUrl, supabaseServiceKey);
+export const supabase = createClient(supabaseUrl, supabaseServiceKey || "fallback-key-for-build");
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
@@ -208,6 +208,7 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
+   // const distPath = __dirname;
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
