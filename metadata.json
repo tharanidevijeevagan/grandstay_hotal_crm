@@ -1,0 +1,6 @@
+{
+  "name": "GrandStay Hotel CRM",
+  "description": "AI-powered Hotel CRM and Property Management System for boutique and mid-sized hotels.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
