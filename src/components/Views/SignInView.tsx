@@ -93,7 +93,7 @@ export const SignInView: React.FC<SignInViewProps> = ({ onSuccess }) => {
 
   const [selectedProperty, setSelectedProperty] = useState(HOTEL_PROPERTIES[0]);
   const [email, setEmail] = useState('admin@grandstay.com');
-  const [password, setPassword] = useState('••••••••');
+  const [password, setPassword] = useState('grandstay2026');
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>('admin');
   const [rememberMe, setRememberMe] = useState(true);

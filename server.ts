@@ -21,7 +21,7 @@ if (!supabaseServiceKey && process.env.NODE_ENV === "production") {
 // Backend Supabase client
 export const supabase = createClient(supabaseUrl, supabaseServiceKey || "fallback-key-for-build");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json());
 
@@ -45,12 +45,59 @@ const getAi = () => {
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", app: "GrandStay Hotel CRM", version: "1.0.0" });
 });
+app.get("/api/supabase-test", async (req, res) => {
+  try {
+    const { error } = await supabase.from("_test").select("*").limit(1);
+
+    if (error) {
+      return res.json({
+        connected: true,
+        message: "Supabase is reachable, but the test table does not exist."
+      });
+    }
+
+    res.json({
+      connected: true,
+      message: "Supabase connected successfully!"
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      connected: false,
+      message: error.message
+    });
+  }
+});
 
 // AI Assistant Endpoint
+// Gemini Connection Test
+app.get("/api/gemini-test", async (req, res) => {
+  try {
+    const ai = getAi();
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.6-flash",
+      contents: "Say hello in one short sentence."
+    });
+
+    res.json({
+      connected: true,
+      message: response.text
+    });
+
+  } catch (error: any) {
+    console.error("Gemini Test Error:", error);
+
+    res.status(500).json({
+      connected: false,
+      message: error.message || String(error)
+    });
+  }
+});
 app.post("/api/ai/chat", async (req, res) => {
   try {
     const { message, hotelContext } = req.body;
     const ai = getAi();
+    
 
     const systemInstruction = `You are "GrandStay AI", the dedicated AI Hotel Operations & CRM Assistant for GrandStay Boutique Hotel.
 You have real-time access to the hotel's operational and guest data:
